@@ -35,12 +35,12 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    
+
     try
     {
         var context = services.GetRequiredService<MvcMovieContext>();
         context.Database.EnsureCreated(); // This creates the database if it doesn't exist
-        
+
         // Check if we need to seed data
         if (!context.Movie.Any())
         {
@@ -80,27 +80,24 @@ using (var scope = app.Services.CreateScope())
                 // Your 3 favorite movies
                 new Movie
                 {
-                    Title = "The Shawshank Redemption",
-                    ReleaseDate = DateTime.Parse("1994-9-23"),
-                    Genre = "Drama",
-                    Price = 12.99M,
-                    Rating = "R"
+                    Title = "When Harry Met Sally",
+                    ReleaseDate = DateTime.Parse("1989-2-12"),
+                    Genre = "Romantic Comedy",
+                    Price = 7.99M
                 },
                 new Movie
                 {
-                    Title = "Inception",
-                    ReleaseDate = DateTime.Parse("2010-7-16"),
-                    Genre = "Sci-Fi",
-                    Price = 14.99M,
-                    Rating = "PG-13"
+                    Title = "Ghostbusters",
+                    ReleaseDate = DateTime.Parse("1984-3-13"),
+                    Genre = "Comedy",
+                    Price = 8.99M
                 },
                 new Movie
                 {
-                    Title = "The Dark Knight",
-                    ReleaseDate = DateTime.Parse("2008-7-18"),
-                    Genre = "Action",
-                    Price = 13.99M,
-                    Rating = "PG-13"
+                    Title = "Ghostbusters 2",
+                    ReleaseDate = DateTime.Parse("1986-2-23"),
+                    Genre = "Comedy",
+                    Price = 9.99M
                 }
             );
             context.SaveChanges();
