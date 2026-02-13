@@ -1,0 +1,159 @@
+@page "/todo"
+@rendermode InteractiveServer
+
+<PageTitle>Todo List</PageTitle>
+
+<h1>Todo List</h1>
+
+<div class="todo-container">
+    <div class="input-group mb-3">
+        <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Add a new task..." 
+            @bind="newTaskTitle"
+            @onkeypress="HandleKeyPress"
+        />
+        <button class="btn btn-primary" @onclick="AddTask">Add Task</button>
+    </div>
+
+    @if (tasks.Count == 0)
+    {
+        <div class="alert alert-info">
+            <p>No tasks yet. Add one to get started!</p>
+        </div>
+    }
+    else
+    {
+        <div class="todo-list">
+            @foreach (var task in tasks)
+            {
+                <div class="todo-item">
+                    <input 
+                        type="checkbox" 
+                        class="form-check-input" 
+                        @bind="task.IsComplete"
+                    />
+                    <span class="task-title @(task.IsComplete ? "completed" : "")">
+                        @task.Title
+                    </span>
+                    <button 
+                        class="btn btn-sm btn-danger" 
+                        @onclick="() => DeleteTask(task.Id)"
+                    >
+                        Delete
+                    </button>
+                </div>
+            }
+        </div>
+
+        <div class="todo-summary mt-3">
+            <p>
+                <strong>Total Tasks:</strong> @tasks.Count | 
+                <strong>Completed:</strong> @completedCount | 
+                <strong>Remaining:</strong> @(tasks.Count - completedCount)
+            </p>
+        </div>
+
+        @if (completedCount > 0)
+        {
+            <button class="btn btn-warning mt-2" @onclick="ClearCompleted">
+                Clear Completed Tasks
+            </button>
+        }
+    }
+</div>
+
+<style>
+    .todo-container {
+        max-width: 500px;
+        margin: 20px 0;
+    }
+
+    .todo-list {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .todo-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #f0f0f0;
+        gap: 10px;
+    }
+
+    .todo-item:last-child {
+        border-bottom: none;
+    }
+
+    .todo-item input[type="checkbox"] {
+        flex-shrink: 0;
+    }
+
+    .task-title {
+        flex: 1;
+        word-break: break-word;
+    }
+
+    .task-title.completed {
+        text-decoration: line-through;
+        color: #888;
+    }
+
+    .todo-summary {
+        font-size: 0.95rem;
+        color: #555;
+    }
+</style>
+
+@code {
+    private List<TodoItem> tasks = new();
+    private string newTaskTitle = "";
+    private int nextId = 1;
+
+    private int completedCount => tasks.Count(t => t.IsComplete);
+
+    private void AddTask()
+    {
+        if (string.IsNullOrWhiteSpace(newTaskTitle))
+            return;
+
+        tasks.Add(new TodoItem 
+        { 
+            Id = nextId++, 
+            Title = newTaskTitle.Trim(),
+            IsComplete = false,
+            CreatedDate = DateTime.Now
+        });
+
+        newTaskTitle = "";
+    }
+
+    private void DeleteTask(int id)
+    {
+        tasks.RemoveAll(t => t.Id == id);
+    }
+
+    private void ClearCompleted()
+    {
+        tasks.RemoveAll(t => t.IsComplete);
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            AddTask();
+        }
+    }
+
+    public class TodoItem
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = "";
+        public bool IsComplete { get; set; }
+        public DateTime CreatedDate { get; set; }
+    }
+}
